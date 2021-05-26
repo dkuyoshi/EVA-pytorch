@@ -81,6 +81,25 @@ def main():
                         help='NoisyNet explorer switch. This disables following options: '
                              '--final-exploration-frames, --final-epsilon, --eval-epsilon')
     parser.add_argument('--num_step_return', type=int, default=1)
+    parser.add_argument(
+        "--eval-epsilon",
+        type=float,
+        default=0.001,
+        help="Exploration epsilon used during eval episodes.",
+    )
+    parser.add_argument(
+        "--final-epsilon",
+        type=float,
+        default=0.01,
+        help="Final value of epsilon during training.",
+    )
+    parser.add_argument(
+        "--final-exploration-frames",
+        type=int,
+        default=10 ** 6,
+        help="Timesteps after which we stop " + "annealing exploration rate",
+    )
+    parser.add_argument("--lr", type=float, default=2.5e-4, help="Learning rate.")
 
     args = parser.parse_args()
 
@@ -141,9 +160,6 @@ def main():
     )
 
     # Draw the computational graph and save it in the output directory.
-    chainerrl.misc.draw_computational_graph(
-        [q_func(np.zeros((4, 84, 84), dtype=np.float32)[None])],
-        os.path.join(args.outdir, 'model'))
 
     # Use the same hyperparameters as the Nature paper
     opt = pfrl.optimizers.RMSpropEpsInsideSqrt(

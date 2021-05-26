@@ -490,7 +490,7 @@ class EVA(agent.AttributeSavingMixin, agent.BatchAgent):
         with torch.no_grad(), evaluating(self.model):
             batch_av = self._evaluate_model_and_update_recurrent_states(batch_obs)
             batch_argmax = batch_av.greedy_actions.detach().cpu().numpy()
-            batch_embed = self.model.get_embedding().array.to('cpu')
+            batch_embed = self.model.get_embedding().to('cpu')
         if self.training:
             batch_action = [
                 self.explorer.select_action(
@@ -570,7 +570,7 @@ class EVA(agent.AttributeSavingMixin, agent.BatchAgent):
         if (t % self.periodic_steps == 0) and (self.t >= self.replay_buffer.capacity):
             self.replay_buffer.update_embedding()
             trajectories = self.replay_buffer.lookup(embedding)
-            batch_trajectory = [{'state': batch_states([elem[0]['state'] for elem in traject], self.xp, self.phi),
+            batch_trajectory = [{'state': batch_states([elem[0]['state'] for elem in traject], self.device, self.phi),
                                  'action': [elem[0]['action'] for elem in traject],
                                  'reward': [elem[0]['reward'] for elem in traject],
                                  'embedding': [elem[0]['embedding'] for elem in traject]
@@ -589,12 +589,12 @@ class EVA(agent.AttributeSavingMixin, agent.BatchAgent):
             batch[:len(trajectory['state'])] = trajectory['state']
             batch_state.append(batch)
 
-        batch_state = self.xp.concatenate(batch_state, axis=0).astype(self.xp.float32)
+        batch_state = torch.cat(batch_state, dim=0)
 
-        with torch.no_grad:
+        with torch.no_grad():
             parametric_q = self.model(batch_state, eva=False)
-            parametric_q = parametric_q.q_values.array.reshape(
-                (len(trajectories), self.len_trajectory, self.n_actions)).to('cpu')
+            parametric_q = parametric_q.q_values.reshape(
+                (len(trajectories), self.len_trajectory, self.n_actions)).to('cpu').detach().numpy().copy()
 
         q_value = []
         for qnp, trajectory in zip(parametric_q, trajectories):

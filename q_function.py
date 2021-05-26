@@ -57,8 +57,8 @@ class QNet(nn.Module):
         self.q_out = nn.Linear(n_hidden, n_actions)
 
     def forward(self, x):
-        self.embedding = self.hout(x)
-        q = self.qout(F.relu(self.embedding))
+        self.embedding = self.h_out(x)
+        q = self.q_out(F.relu(self.embedding))
         return action_value.DiscreteActionValue(q)
 
 
