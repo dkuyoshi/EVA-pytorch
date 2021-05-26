@@ -490,7 +490,7 @@ class EVA(agent.AttributeSavingMixin, agent.BatchAgent):
         with torch.no_grad(), evaluating(self.model):
             batch_av = self._evaluate_model_and_update_recurrent_states(batch_obs)
             batch_argmax = batch_av.greedy_actions.detach().cpu().numpy()
-            batch_embed = self.model.get_embedding().to('cpu')
+            batch_embed = self.model.get_embedding().detach().cpu().numpy()
         if self.training:
             batch_action = [
                 self.explorer.select_action(
@@ -505,6 +505,8 @@ class EVA(agent.AttributeSavingMixin, agent.BatchAgent):
             self.batch_last_embed = list(batch_embed)
         else:
             batch_action = batch_argmax
+        self.backup_store_if_necessary(self.batch_last_embed, self.current_t)
+        self.current_t += 1
         return batch_action
 
     def _batch_observe_train(
