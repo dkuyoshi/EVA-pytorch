@@ -162,14 +162,7 @@ def main():
     # Draw the computational graph and save it in the output directory.
 
     # Use the same hyperparameters as the Nature paper
-    opt = pfrl.optimizers.RMSpropEpsInsideSqrt(
-        q_func.parameters(),
-        lr=args.lr,
-        alpha=0.95,
-        momentum=0.0,
-        eps=1e-2,
-        centered=True,
-    )
+    opt = torch.optim.Adam(q_func.parameters(), lr=args.lr)
 
     rbuf = EVAReplayBuffer(args.replay_buffer_capacity, num_steps=args.num_step_return, key_width=256, device=device,
                            M=args.replay_buffer_neighbors,
