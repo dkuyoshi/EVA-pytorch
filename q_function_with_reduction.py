@@ -79,9 +79,8 @@ class QFunction(nn.Module):
         self.dim = 4
 
         rng = np.random.RandomState(123456)
-        input_dim = 84 * 84 * 4
+        input_dim = 84 * 84 * n_input_channels
         self.rp = rng.normal(loc=0, scale=1. / np.sqrt(self.dim), size=(self.dim, input_dim))
-
 
     def forward(self, x, eva=False):
         q = self.q_func(x)
