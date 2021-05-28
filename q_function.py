@@ -87,6 +87,3 @@ class QFunction(nn.Module):
     def get_embedding(self):
         return self.q_func.embedding
         
-
-
-        
