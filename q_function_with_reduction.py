@@ -65,7 +65,7 @@ class QNet(nn.Module):
         return action_value.DiscreteActionValue(q)
 
 
-class QFunction(nn.Module):
+class QFunctionR(nn.Module):
     def __init__(self, n_input_channels, n_actions, device, LRU=False, n_hidden=256, lambdas=0.5, capacity=2000,
                  num_neighbors=5):
         super().__init__()
@@ -84,6 +84,7 @@ class QFunction(nn.Module):
 
     def forward(self, x, eva=False):
         q = self.q_func(x)
+        x = x.detach().cpu().numpy()
         z = np.dot(self.rp, x.flatten())
         self.embedding = z.reshape((self.dim))
         if not eva or self.lambdas == 0 or self.lambdas == 1:

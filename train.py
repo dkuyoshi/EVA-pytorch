@@ -17,6 +17,7 @@ import gym.wrappers
 
 import json
 from q_function import QFunction
+from q_function_with_reduction import QFunctionR
 
 from value_buffer import ValueBuffer
 from eva_replay_buffer import EVAReplayBuffer
@@ -99,6 +100,8 @@ def main():
         default=10 ** 6,
         help="Timesteps after which we stop " + "annealing exploration rate",
     )
+    parser.add_argument('--r', action='store_true', default=False,
+                        help='Use projection q function')
     parser.add_argument("--lr", type=float, default=2.5e-4, help="Learning rate.")
 
     args = parser.parse_args()
@@ -150,7 +153,17 @@ def main():
 
     n_input = 4
 
-    q_func = QFunction(n_input_channels=n_input, n_actions=n_actions, device=device,)
+    if args.r:
+        q_func = QFunctionR(n_input_channels=n_input, n_actions=n_actions, device=device, )
+        rbuf = EVAReplayBuffer(args.replay_buffer_capacity, num_steps=args.num_step_return, key_width=4, device=device,
+                               M=args.replay_buffer_neighbors,
+                               T=args.len_trajectory)
+    else:
+        q_func = QFunction(n_input_channels=n_input, n_actions=n_actions, device=device, )
+        rbuf = EVAReplayBuffer(args.replay_buffer_capacity, num_steps=args.num_step_return, key_width=256,
+                               device=device,
+                               M=args.replay_buffer_neighbors,
+                               T=args.len_trajectory)
 
     explorer = explorers.LinearDecayEpsilonGreedy(
         1.0,
