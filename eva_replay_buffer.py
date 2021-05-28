@@ -79,7 +79,7 @@ class EVAReplayBuffer(replay_buffers.ReplayBuffer):
         return trajectories
 
     def index_search(self, embedding):
-        distances = torch.sum((torch.tensor(embedding[0].reshape(1,256), device=self.device) - self.embeddings) ** 2, dim=1)
+        distances = torch.sum((torch.tensor(embedding[0].reshape(1, self.key_width), device=self.device) - self.embeddings) ** 2, dim=1)
         return torch.argsort(distances)[:self.neighbors]
 
     def update_embedding(self):
