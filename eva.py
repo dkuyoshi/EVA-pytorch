@@ -197,7 +197,8 @@ class EVA(agent.AttributeSavingMixin, agent.BatchAgent):
         recurrent: bool = False,
         max_grad_norm: Optional[float] = None,
         len_trajectory: int = 50,
-        periodic_steps: int = 20
+        periodic_steps: int = 20,
+        r: bool = False
     ):
         self.model = q_function
         self.q_function = q_function
@@ -270,6 +271,8 @@ class EVA(agent.AttributeSavingMixin, agent.BatchAgent):
         self.periodic_steps = periodic_steps
         self.value_buffer = self.model.non_q
         self.current_t = 0
+
+        self.r = r
 
         # Error checking
         if (
@@ -490,7 +493,10 @@ class EVA(agent.AttributeSavingMixin, agent.BatchAgent):
         with torch.no_grad(), evaluating(self.model):
             batch_av = self._evaluate_model_and_update_recurrent_states(batch_obs)
             batch_argmax = batch_av.greedy_actions.detach().cpu().numpy()
-            batch_embed = self.model.get_embedding().detach().cpu().numpy()
+            if self.r:
+                batch_embed = self.model.get_embedding()
+            else:
+                batch_embed = self.model.get_embedding().detach().cpu().numpy()
         if self.training:
             batch_action = [
                 self.explorer.select_action(

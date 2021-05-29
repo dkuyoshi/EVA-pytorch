@@ -177,10 +177,6 @@ def main():
     # Use the same hyperparameters as the Nature paper
     opt = torch.optim.Adam(q_func.parameters(), lr=args.lr)
 
-    rbuf = EVAReplayBuffer(args.replay_buffer_capacity, num_steps=args.num_step_return, key_width=256, device=device,
-                           M=args.replay_buffer_neighbors,
-                           T=args.len_trajectory)
-
     def phi(x):
         # Feature extractor
         return np.asarray(x, dtype=np.float32) / 255
@@ -197,7 +193,8 @@ def main():
                   n_times_update=1,
                   episodic_update_len=16,
                   len_trajectory=args.len_trajectory,
-                  periodic_steps=args.periodic_steps
+                  periodic_steps=args.periodic_steps,
+                  r=args.r
                   )
 
     if args.load:
