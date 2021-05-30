@@ -94,7 +94,7 @@ class QFunctionR(nn.Module):
         if not eva or self.lambdas == 0 or self.lambdas == 1:
             return q
 
-        qnp = self.non_q.get_q(self.embedding.detach().cpu().numpy())
+        qnp = self.non_q.get_q(self.embedding)
         # Q-value adjustment
         qout = self.lambdas * q.q_values + (1 - self.lambdas) * qnp
         return action_value.DiscreteActionValue(qout)
