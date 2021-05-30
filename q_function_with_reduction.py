@@ -70,13 +70,14 @@ class QFunctionR(nn.Module):
                  num_neighbors=5):
         super().__init__()
         self.q_func = QNet(n_input_channels, n_actions, n_hidden)
-        # Call the initialization of the value buffer that outputs the non-parametric Q value
-        self.non_q = ValueBuffer(capacity, num_neighbors, n_hidden, n_actions, device, LRU=LRU)
 
         self.lambdas = lambdas
         self.n_actions = n_actions
         self.capacity = capacity
         self.dim = 4
+
+        # Call the initialization of the value buffer that outputs the non-parametric Q value
+        self.non_q = ValueBuffer(capacity, num_neighbors, key_width=self.dim, n_actions=n_actions, device=device, LRU=LRU)
 
         rng = np.random.RandomState(123456)
         input_dim = 84 * 84 * n_input_channels
@@ -84,9 +85,12 @@ class QFunctionR(nn.Module):
 
     def forward(self, x, eva=False):
         q = self.q_func(x)
-        x = x.detach().cpu().numpy()
-        z = np.dot(self.rp, x.flatten())
-        self.embedding = z.reshape((self.dim))
+        if x.shape != (1, 4, 84, 84):
+            pass
+        else:
+            x = x.detach().cpu().numpy()
+            z = np.dot(self.rp, x.flatten())
+            self.embedding = z.reshape((1, self.dim))
         if not eva or self.lambdas == 0 or self.lambdas == 1:
             return q
 
