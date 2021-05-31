@@ -7,6 +7,7 @@ import time
 from logging import Logger, getLogger
 from typing import Any, Callable, Dict, List, Optional, Sequence, Tuple
 
+import sys
 import numpy as np
 import torch
 import torch.nn.functional as F
@@ -848,6 +849,7 @@ class EVA(agent.AttributeSavingMixin, agent.BatchAgent):
         return make_actor, learner, poller, exception_event
 
     def stop_episode(self) -> None:
+        self.replay_buffer.save("replay_saving")
         if self.recurrent:
             self.test_recurrent_states = None
 
