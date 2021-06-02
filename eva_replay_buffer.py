@@ -9,6 +9,7 @@ from pfrl.collections.random_access_queue import RandomAccessQueue
 import torch
 import numpy as np
 
+
 class EVAReplayBuffer(replay_buffers.ReplayBuffer):
     def __init__(self, capacity, num_steps, key_width, device, M=10, T=50):
         super().__init__(capacity, num_steps)
