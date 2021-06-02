@@ -44,7 +44,6 @@ class CNN(nn.Module):
 
         batch_size = x.shape[0]
         h = h.reshape(batch_size, -1)
-
         h = self.head(h)
 
         return h
