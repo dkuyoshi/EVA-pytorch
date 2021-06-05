@@ -512,7 +512,7 @@ class EVA(agent.AttributeSavingMixin, agent.BatchAgent):
             self.batch_last_embed = list(batch_embed)
         else:
             batch_action = batch_argmax
-        self.backup_store_if_necessary(self.batch_last_embed, self.current_t)
+        self.backup_store_if_necessary(batch_embed, self.current_t)
         self.current_t += 1
         return batch_action
 
