@@ -85,7 +85,10 @@ class QFunctionR(nn.Module):
 
     def forward(self, x, eva=False):
         q = self.q_func(x)
-        self.embedding = self.get_embedding()
+        if x.shape != (1, 4, 84, 84):
+            pass
+        else:
+            self.embedding = self.get_embedding()
         if not eva or self.lambdas == 0 or self.lambdas == 1:
             return q
 
