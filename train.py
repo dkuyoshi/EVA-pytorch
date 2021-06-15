@@ -17,7 +17,7 @@ import gym.wrappers
 
 import json
 from q_function import QFunction
-from q_function_with_reduction import QFunctionR
+from q_function_with_reduction_e import QFunctionR
 
 from value_buffer import ValueBuffer
 from eva_replay_buffer import EVAReplayBuffer
